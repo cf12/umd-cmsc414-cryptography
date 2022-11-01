@@ -118,14 +118,15 @@ the ciphertext for a session and outputs
    `task3.out`
 
 For this session, you know that the target sent a money transfer
-request to your account for $10, and requested payments from at least
-one other account. No other requests involving your account are in
-this session.
+to your account for $10. No other requests involving your account
+are in this session. In addition, the target requested payments
+(invoices) from at least one other account.
 
-Your executable should produce a file `task3.out` containing the input
-ciphertext with the modified message. That is, `task3.out` should
-contain the same messages as the input, but with the amount changed in
-the payment to your account.
+Your executable should produce a file `task3.out` containing the
+input ciphertext with the modified message. That is, `task3.out`
+should contain the same messages as the input, but with the amount
+changed in the payment to your account, so the target is sending
+you a different amount of money.
 
 As before, the input ciphertext stream will be provided as the only
 command-line argument to your executable, and will be in the same
