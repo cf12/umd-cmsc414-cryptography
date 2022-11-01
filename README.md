@@ -39,8 +39,8 @@ sequence of requests, in the order given:
  6. A $1000 transfer from your savings account to your checking
     account, to be executed tomorrow
  7. A balance request for your savings account
- 8. A request for payment of $1000 to your checking account from your
-    savings account
+ 8. An invoice request issued by your checking account for payment
+    of $1000 from your savings account
  9. A balance request for your checking account
 
 You are also given additional ciphertext streams, which are from
