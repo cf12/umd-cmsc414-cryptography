@@ -95,13 +95,14 @@ For this task, you will provide an executable named `task2` that reads
 the ciphertext for a session and outputs
 
  * The types of messages, in order, with each on a separate line
- * A replay of a message that transfers money into your account,
-   written to a file named `task2.out`
+ * A replay (unmodified copy) of a message that transfers money
+   into your account, written to a file named `task2.out`
 
 For this session, you know that *exactly one* message includes your
-account. The file `task2.out` should include the **entire** stream,
-with your replay added to it. That is, there should be exactly one
-more message in `task2.out` than the input stream.
+account, and it is transfering money to you. The file `task2.out`
+should include the **entire** stream, with your replay added to it.
+That is, there should be exactly one more message in `task2.out`
+than the input stream.
 
 As before, the input ciphertext stream will be provided as the only
 command-line argument to your executable, and will be in the same
