@@ -305,7 +305,7 @@ Binary data in python is a little more cumbersome than in C, but it is
 otherwise generally easier to write code in, and has useful structures
 like `list` and `dict`.
 
-Section 6.3 of *A General Systems Handbook* briefly discusses files, but
+Section 7.3 of *A General Systems Handbook* briefly discusses files, but
 this is from the perspective of text files. For binary files, you need
 to add the specifier `b` when opening the file:
 
