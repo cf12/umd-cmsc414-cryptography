@@ -173,12 +173,8 @@ The following table shows the expected way to print message types:
 
 ## Submission
 
-You must commit your submission to git by the deadline. Pushes to
-gitlab after the deadline are acceptable, but late commits will only
-be accepted if you were granted an extension.
-
-Do not add compiled files to git, only scripts, source code, and (if
-needed) a `Makefile`.
+You must commit your submission to git.  Do not add compiled files
+to git, only scripts, source code, and (if needed) a `Makefile`.
 
 ## Scoring
 
