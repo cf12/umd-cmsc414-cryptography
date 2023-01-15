@@ -198,12 +198,11 @@ originating transactions as being principals that share a single
 identity. The attacker, in contrast, is a separate identity, and will
 not be initiating a transaction in tasks 2-4.
 
-A good place to start while coding your solution is to focus solely on
-the types of transactions, ignoring the other fields. You should be
-able to start by assuming the first transaction is of a particular
-type, and see what that implies for the next transaction, which will
-either be the same type or one of the other two. You can do this
-iteratively, and ultimately you’ll see one of the following:
+You should be able to start by assuming the first transaction is
+of a particular type, and see what that implies for the next
+transaction, which will either be the same type or one of the other
+two. You can do this iteratively, and ultimately you’ll see one of
+the following:
 
   1. You have consumed the entire session, with only three transaction
      types appearing.
@@ -213,9 +212,13 @@ iteratively, and ultimately you’ll see one of the following:
 
 The first of these should indicate successful parsing. Either of the
 others means you have made an incorrect assumption/guess during your
-parsing, and you need to unwind.
+parsing, and you need to unwind. Make sure you keep track of what
+ciphertext corresponds to what type of field as you parse --- no
+two fields of different types will encrypt to the same ciphertext.
 
-You should be able to enumerate all of the possibilities in your code.
+You should be able to enumerate all of the possibilities in your code,
+since there are only six ways to order three message types by the order
+in which they *first* occur.
 
 ### Examining Binary Files
 
@@ -319,3 +322,20 @@ Writing is similar:
 with open('output_file.bin', 'wb') as out_file:
     out_file.write(bindata)   # the bytes object above
 ```
+
+Python also makes it easy to tell if an item is in a list:
+```python
+l = ['a' , 'b', 'c']
+'a' in l # evaluates to True
+'d' in l # evaluates to False
+```
+This also works for dictionary keys:
+```python
+d = dict()
+d['a'] = 1
+d['b'] = 2
+d['c'] = 3
+'a' in d # evaluates to True
+'d' in d # evaluates to False
+```
+
