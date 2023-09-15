@@ -17,7 +17,18 @@ class Attacker ():
         self.data = open(filename, 'rb').read()
         # self.blocks = list(map(lambda x: x.hex(), chunks(self.data, BLOCK_SIZE)))
         self.blocks = list(chunks(self.data, BLOCK_SIZE))
+        self.mapping = self.parse_mapping()
 
+    def parse (self):
+        i = 0
+
+        while i < len(self.data):
+            block = self.data[i:i+BLOCK_SIZE]
+
+            print(self.mapping[block])
+            i += BLOCK_SIZE * MESSAGES[self.mapping[block]]
+            
+        assert i == len(self.data)
 
     def parse_mapping (self):
         for types in permutations(MESSAGES.keys()):
@@ -38,17 +49,17 @@ class Attacker ():
             if i == len(self.blocks):
                 return mapping
 
-        return None
+        raise Exception("could not determine mapping")
 
-    def parse_accounts (self, mapping):
+    def parse_accounts (self):
         accs = Counter()
         i = 0
 
         while i < len(self.blocks):
             block = self.blocks[i]
-            msg = mapping[block]
+            msg = self.mapping[block]
 
-            print(mapping[block])
+            print(self.mapping[block])
             if msg == "BALANCE":
                 accs[self.blocks[i + 1]] += 1
             elif msg == "TRANSFER" or msg == "INVOICE":
@@ -57,18 +68,18 @@ class Attacker ():
             else:
                 raise Exception(f"invalid block: 0x{block}")
 
-            i += MESSAGES[mapping[block]]
+            i += MESSAGES[self.mapping[block]]
             
         assert i == len(self.blocks)
 
         return accs
 
-    def find_transaction (self, mapping, acc):
+    def find_transaction (self, acc):
         i = 0
 
         while i < len(self.blocks):
             block = self.blocks[i]
-            msg = mapping[block]
+            msg = self.mapping[block]
 
             if msg == "TRANSFER":
                 # print(blocks[i])
@@ -76,7 +87,7 @@ class Attacker ():
                 if self.blocks[i + 2] == acc:
                     return b''.join(self.blocks[i:i+MESSAGES["TRANSFER"]])
 
-            i += MESSAGES[mapping[block]]
+            i += MESSAGES[self.mapping[block]]
             
         return None
 

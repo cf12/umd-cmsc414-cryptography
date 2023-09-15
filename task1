@@ -1,63 +1,8 @@
 #!/usr/bin/python3
 
 import sys
-from collections import Counter
-from pprint import pprint
-from itertools import permutations 
+from common import *
 
-BLOCK_SIZE=16
-MESSAGES={
-    "BALANCE": 2,
-    "TRANSFER": 5,
-    "INVOICE": 4
-}
-
-data = open(sys.argv[1], 'rb').read()
-
-# def chunks(lst, n):
-#     for i in range(0, len(lst), n):
-#         yield lst[i:i + n]
-
-# cs = Counter(map(lambda x: x.hex(), chunks(data, 16)))
-# pprint(cs)
-
-def crack ():
-    for types in permutations(MESSAGES.keys()):
-        tmp_types = list(types)
-        mapping={}
-        i=0
-
-        while i < len(data):
-            block = data[i:i+BLOCK_SIZE]
-
-            if block not in mapping:
-                if len(tmp_types) == 0:
-                    # raise Exception(f"invalid block: 0x{block.hex()}")
-                    break
-                mapping[block] = tmp_types.pop(0)
-
-            # print(block.hex())
-            # print(mapping[block])
-            i += BLOCK_SIZE * MESSAGES[mapping[block]]
-        
-        if i == len(data):
-            return mapping
-
-    return None
-
-def parse (mapping):
-    i = 0
-
-    while i < len(data):
-        block = data[i:i+BLOCK_SIZE]
-
-        print(mapping[block])
-        i += BLOCK_SIZE * MESSAGES[mapping[block]]
-        
-    assert i == len(data)
-
-mapping = crack()
-assert mapping != None
-
-parse(mapping)
+a = Attacker(sys.argv[1])
+a.parse()
 
