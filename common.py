@@ -72,6 +72,18 @@ def parse (filename):
     mappings = parse_mappings(blocks)
     return f, parse_data(blocks, mappings)
 
+def get_accounts(msgs):
+    accs = Counter()
+
+    for msg in msgs:
+        if isinstance(msg, Balance):
+            accs[msg.acc] += 1
+        elif isinstance(msg, Transfer) or isinstance(msg, Invoice):
+            accs[msg.acc_to] += 1
+            accs[msg.acc_from] += 1
+
+    return accs
+
 class Message():
     def __init__(self, type) -> None:
         self.type = type
@@ -107,18 +119,3 @@ class Invoice(Message):
 
     def __str__(self) -> str:
         return "INVOICE"
-
-
-def parse_t3 (self, acc):
-    i = 0
-
-    while i < len(self.blocks):
-        block = self.blocks[i]
-        msg = self.mapping[block]
-
-        if msg == "TRANSFER" and self.blocks[i + 2] == acc:
-            return self.blocks[i + 3]
-
-        i += MESSAGE_SIZES[self.mapping[block]]
-        
-    raise Exception("no $10 transaction found")

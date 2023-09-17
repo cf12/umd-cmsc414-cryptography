@@ -4,27 +4,21 @@ import sys
 from common import *
 
 data, msgs = parse(sys.argv[1])
-accs = Counter()
+accs = get_accounts(msgs)
 
 for msg in msgs:
     print(msg)
-    if isinstance(msg, Balance):
-        accs[msg.acc] += 1
-    elif isinstance(msg, Transfer) or isinstance(msg, Invoice):
-        accs[msg.acc_to] += 1
-        accs[msg.acc_from] += 1
 
 # print(f"accounts: {accs}")
-my_acc = accs.most_common()[-1]
-assert my_acc[1] == 1
-my_acc = my_acc[0]
+acc_mine = accs.most_common()[-1]
+assert acc_mine[1] == 1
+acc_mine = acc_mine[0]
 # print(f"mine: {my_acc}")
 
-transaction = next(msg for msg in msgs if isinstance(msg, Transfer) and msg.acc_to == my_acc)
+transaction = next(msg for msg in msgs if isinstance(msg, Transfer) and msg.acc_to == acc_mine)
 
 # print(vars(transaction))
 
 with open("task2.out", 'wb+') as fil:
     res = data + transaction.encode()
     fil.write(res)
-

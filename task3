@@ -2,32 +2,33 @@
 
 import sys
 from common import *
+from copy import deepcopy
 
-a = Attacker(sys.argv[1])
-accs = a.parse_accounts()
+
+data, msgs = parse(sys.argv[1])
+accs = get_accounts(msgs)
 # print(f"accounts: {accs}")
-my_acc = accs.most_common()[-1]
-assert my_acc[1] == 1
-my_acc = my_acc[0]
+acc_mine = accs.most_common()[-1]
+assert acc_mine[1] == 1
+acc_mine = acc_mine[0]
 # print(f"mine: {my_acc}")
 
-transaction = a.find_transaction(my_acc)
+for msg in msgs:
+    print(msg)
 
-with open("task2.out", 'wb+') as fil:
-    res = a.data + transaction
+amounts = [
+    msg.amount for msg in msgs
+    if isinstance(msg, Transfer) or isinstance(msg, Invoice)
+]
+transaction = next(
+    msg for msg in msgs 
+    if isinstance(msg, Transfer) and msg.acc_to == acc_mine
+)
+other_amount = next(iter(set(amounts) - {transaction.amount}))
+
+new_transaction = deepcopy(transaction)
+new_transaction.amount = other_amount
+
+with open("task3.out", 'wb+') as fil:
+    res = data + new_transaction.encode()
     fil.write(res)
-
-
-def parse_t3 (self, acc):
-    i = 0
-
-    while i < len(self.blocks):
-        block = self.blocks[i]
-        msg = self.mapping[block]
-
-        if msg == "TRANSFER" and self.blocks[i + 2] == acc:
-            return self.blocks[i + 3]
-
-        i += MESSAGE_SIZES[self.mapping[block]]
-        
-    raise Exception("no $10 transaction found")
