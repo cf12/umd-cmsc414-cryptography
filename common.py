@@ -2,7 +2,7 @@ from itertools import permutations
 from collections import Counter
 
 BLOCK_SIZE=16
-MESSAGES={
+MESSAGE_SIZES={
     "BALANCE": 2,
     "TRANSFER": 5,
     "INVOICE": 4
@@ -12,96 +12,113 @@ def chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-class Attacker ():
-    def __init__(self, filename):
-        self.data = open(filename, 'rb').read()
-        # self.blocks = list(map(lambda x: x.hex(), chunks(self.data, BLOCK_SIZE)))
-        self.blocks = list(chunks(self.data, BLOCK_SIZE))
-        self.mapping = self.parse_mapping()
+def parse_data (blocks, mappings):
+    i = 0
+    res=[]
 
-    def parse (self):
-        i = 0
+    while i < len(blocks):
+        block = blocks[i]
 
-        while i < len(self.data):
-            block = self.data[i:i+BLOCK_SIZE]
+        msg = mappings[block]
 
-            print(self.mapping[block])
-            i += BLOCK_SIZE * MESSAGES[self.mapping[block]]
-            
-        assert i == len(self.data)
+        if msg == "BALANCE":
+            res.append(Balance(block, blocks[i+1]))
+        elif msg == "TRANSFER":
+            res.append(Transfer(
+                block,
+                blocks[i+1],
+                blocks[i+2],
+                blocks[i+3],
+                blocks[i+4],
+            ))
+        elif msg == "INVOICE":
+            res.append(Invoice(
+                block,
+                blocks[i+1],
+                blocks[i+2],
+                blocks[i+3]
+            ))
 
-    def parse_mapping (self):
-        for types in permutations(MESSAGES.keys()):
-            tmp_types = list(types)
-            mapping={}
-            i=0
+        i += MESSAGE_SIZES[mappings[block]]
+        
+    assert i == len(blocks)
+    return res
 
-            while i < len(self.blocks):
-                block = self.blocks[i]
+def parse_mappings (blocks):
+    for types in permutations(MESSAGE_SIZES.keys()):
+        tmp_types = list(types)
+        mapping={}
+        i=0
 
-                if block not in mapping:
-                    if len(tmp_types) == 0:
-                        break
-                    mapping[block] = tmp_types.pop(0)
+        while i < len(blocks):
+            block = blocks[i]
 
-                i += MESSAGES[mapping[block]]
-            
-            if i == len(self.blocks):
-                return mapping
+            if block not in mapping:
+                if len(tmp_types) == 0:
+                    break
+                mapping[block] = tmp_types.pop(0)
 
-        raise Exception("could not determine mapping")
+            i += MESSAGE_SIZES[mapping[block]]
+        
+        if i == len(blocks):
+            return mapping
 
-    def parse_accounts (self):
-        accs = Counter()
-        i = 0
+    raise Exception("could not determine mapping")
 
-        while i < len(self.blocks):
-            block = self.blocks[i]
-            msg = self.mapping[block]
+def parse (filename):
+    f = open(filename, 'rb').read()
+    blocks = list(chunks(f, BLOCK_SIZE))
+    # blocks = list(map(lambda x: x.hex(), chunks(f, BLOCK_SIZE)))
+    mappings = parse_mappings(blocks)
+    return f, parse_data(blocks, mappings)
 
-            print(self.mapping[block])
-            if msg == "BALANCE":
-                accs[self.blocks[i + 1]] += 1
-            elif msg == "TRANSFER" or msg == "INVOICE":
-                accs[self.blocks[i + 1]] += 1
-                accs[self.blocks[i + 2]] += 1
-            else:
-                raise Exception(f"invalid block: 0x{block}")
+class Message():
+    def __init__(self, type) -> None:
+        self.type = type
 
-            i += MESSAGES[self.mapping[block]]
-            
-        assert i == len(self.blocks)
+    def encode (self):
+        return b''.join(vars(self).values())
 
-        return accs
+class Balance(Message):
+    def __init__(self, type, acc) -> None:
+        super().__init__(type)
+        self.acc = acc
+    
+    def __str__(self) -> str:
+        return "BALANCE"
 
-    def find_transaction (self, acc):
-        i = 0
+class Transfer(Message):
+    def __init__(self, type, acc_from, acc_to, amount, time) -> None:
+        super().__init__(type)
+        self.acc_from = acc_from
+        self.acc_to = acc_to
+        self.amount = amount
+        self.time = time
 
-        while i < len(self.blocks):
-            block = self.blocks[i]
-            msg = self.mapping[block]
+    def __str__(self) -> str:
+        return "TRANSFER"
 
-            if msg == "TRANSFER":
-                # print(blocks[i])
-                # print(blocks[i + 2])
-                if self.blocks[i + 2] == acc:
-                    return b''.join(self.blocks[i:i+MESSAGES["TRANSFER"]])
+class Invoice(Message):
+    def __init__(self, type, acc_from, acc_to, amount) -> None:
+        super().__init__(type)
+        self.acc_from = acc_from
+        self.acc_to = acc_to
+        self.amount = amount
 
-            i += MESSAGES[self.mapping[block]]
-            
-        return None
+    def __str__(self) -> str:
+        return "INVOICE"
 
 
-    def parse_t3 (self, acc):
-        i = 0
+def parse_t3 (self, acc):
+    i = 0
 
-        while i < len(self.blocks):
-            block = self.blocks[i]
-            msg = self.mapping[block]
+    while i < len(self.blocks):
+        block = self.blocks[i]
+        msg = self.mapping[block]
 
-            if msg == "TRANSFER" and self.blocks[i + 2] == acc:
-                return self.blocks[i + 3]
+        if msg == "TRANSFER" and self.blocks[i + 2] == acc:
+            return self.blocks[i + 3]
 
-            i += MESSAGES[self.mapping[block]]
-            
-        raise Exception("no $100 transaction found")
+        i += MESSAGE_SIZES[self.mapping[block]]
+        
+    raise Exception("no $10 transaction found")

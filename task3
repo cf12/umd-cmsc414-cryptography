@@ -16,3 +16,18 @@ transaction = a.find_transaction(my_acc)
 with open("task2.out", 'wb+') as fil:
     res = a.data + transaction
     fil.write(res)
+
+
+def parse_t3 (self, acc):
+    i = 0
+
+    while i < len(self.blocks):
+        block = self.blocks[i]
+        msg = self.mapping[block]
+
+        if msg == "TRANSFER" and self.blocks[i + 2] == acc:
+            return self.blocks[i + 3]
+
+        i += MESSAGE_SIZES[self.mapping[block]]
+        
+    raise Exception("no $10 transaction found")

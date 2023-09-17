@@ -3,6 +3,6 @@
 import sys
 from common import *
 
-a = Attacker(sys.argv[1])
-a.parse()
-
+data, msgs = parse(sys.argv[1])
+for msg in msgs:
+    print(msg)
