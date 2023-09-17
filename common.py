@@ -91,3 +91,17 @@ class Attacker ():
             
         return None
 
+
+    def parse_t3 (self, acc):
+        i = 0
+
+        while i < len(self.blocks):
+            block = self.blocks[i]
+            msg = self.mapping[block]
+
+            if msg == "TRANSFER" and self.blocks[i + 2] == acc:
+                return self.blocks[i + 3]
+
+            i += MESSAGES[self.mapping[block]]
+            
+        raise Exception("no $100 transaction found")

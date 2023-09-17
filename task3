@@ -1,0 +1,18 @@
+#!/usr/bin/python3
+
+import sys
+from common import *
+
+a = Attacker(sys.argv[1])
+accs = a.parse_accounts()
+# print(f"accounts: {accs}")
+my_acc = accs.most_common()[-1]
+assert my_acc[1] == 1
+my_acc = my_acc[0]
+# print(f"mine: {my_acc}")
+
+transaction = a.find_transaction(my_acc)
+
+with open("task2.out", 'wb+') as fil:
+    res = a.data + transaction
+    fil.write(res)
