@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+
+import sys
+from common import *
+from copy import deepcopy
+
+
+data, msgs = parse(sys.argv[1])
+accs = get_accounts(msgs)
+# print(f"accounts: {accs}")
+acc_mine = accs.most_common()[-1]
+assert acc_mine[1] == 1
+acc_mine = acc_mine[0]
+# print(f"mine: {my_acc}")
+
+for msg in msgs:
+    print(msg)
+
+transaction = next(
+    msg for msg in msgs 
+    if isinstance(msg, Transfer) and msg.acc_to == acc_mine
+)
+
+new_transaction = deepcopy(transaction)
+new_transaction.acc_to, new_transaction.acc_from = new_transaction.acc_from, new_transaction.acc_to
+
+with open("task4.out", 'wb+') as fil:
+    res = data + new_transaction.encode()
+    fil.write(res)
