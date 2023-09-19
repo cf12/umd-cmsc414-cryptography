@@ -25,10 +25,8 @@ transaction = next(
     if isinstance(msg, Transfer) and msg.acc_to == acc_mine
 )
 other_amount = next(iter(set(amounts) - {transaction.amount}))
-
-new_transaction = deepcopy(transaction)
-new_transaction.amount = other_amount
+transaction.amount = other_amount
 
 with open("task3.out", 'wb+') as fil:
-    res = data + new_transaction.encode()
+    res = b''.join(msg.encode() for msg in msgs)
     fil.write(res)
