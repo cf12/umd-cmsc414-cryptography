@@ -18,7 +18,7 @@ for msg in msgs:
 
 transaction = next(
     msg for msg in msgs 
-    if isinstance(msg, Transfer) and msg.acc_to == acc_mine
+    if isinstance(msg, Transfer) and msg.acc_from == acc_mine
 )
 
 new_transaction = deepcopy(transaction)
