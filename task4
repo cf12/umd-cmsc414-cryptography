@@ -8,10 +8,9 @@ from copy import deepcopy
 data, msgs = parse(sys.argv[1])
 accs = get_accounts(msgs)
 # print(f"accounts: {accs}")
-acc_mine = accs.most_common()[-1]
-assert acc_mine[1] == 1
-acc_mine = acc_mine[0]
-# print(f"mine: {my_acc}")
+acc_mine, count = accs.most_common()[-1]
+assert count == 1
+# print(f"mine: {acc_mine}")
 
 for msg in msgs:
     print(msg)
@@ -21,9 +20,8 @@ transaction = next(
     if isinstance(msg, Transfer) and msg.acc_from == acc_mine
 )
 
-new_transaction = deepcopy(transaction)
-new_transaction.acc_to, new_transaction.acc_from = new_transaction.acc_from, new_transaction.acc_to
+transaction.acc_to, transaction.acc_from = transaction.acc_from, transaction.acc_to
 
 with open("task4.out", 'wb+') as fil:
-    res = data + new_transaction.encode()
+    res = b''.join(msg.encode() for msg in msgs)
     fil.write(res)

@@ -45,6 +45,7 @@ def parse_data (blocks, mappings):
     return res
 
 def parse_mappings (blocks):
+    possible_mappings = []
     for types in permutations(MESSAGE_SIZES.keys()):
         tmp_types = list(types)
         mapping={}
@@ -60,10 +61,16 @@ def parse_mappings (blocks):
 
             i += MESSAGE_SIZES[mapping[block]]
         
-        if i == len(blocks):
-            return mapping
+        if i == len(blocks) and len(set(mapping.keys())) == len(set(mapping.values())):
+            possible_mappings.append(mapping)
 
-    raise Exception("could not determine mapping")
+    # print(possible_mappings)
+    if len(possible_mappings) == 0:
+        raise Exception("could not determine mapping")
+    elif len(possible_mappings) > 1:
+        raise Exception("more than one possible mapping")
+    else:
+        return possible_mappings[0]
 
 def parse (filename):
     f = open(filename, 'rb').read()
