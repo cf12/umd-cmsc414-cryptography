@@ -1,5 +1,6 @@
 from itertools import permutations 
 from collections import Counter
+from pprint import pprint
 
 BLOCK_SIZE=16
 MESSAGE_SIZES={
@@ -64,7 +65,7 @@ def parse_mappings (blocks):
         if i == len(blocks) and len(set(mapping.keys())) == len(set(mapping.values())):
             possible_mappings.append(mapping)
 
-    # print(possible_mappings)
+    # pprint(possible_mappings)
     if len(possible_mappings) == 0:
         raise Exception("could not determine mapping")
     elif len(possible_mappings) > 1:

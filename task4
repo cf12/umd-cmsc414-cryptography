@@ -2,11 +2,19 @@
 
 import sys
 from common import *
-from copy import deepcopy
 
+def get_accounts_t4(msgs):
+    accs = Counter()
+
+    for msg in msgs:
+        if isinstance(msg, Transfer):
+            accs[msg.acc_from] += 1
+
+    return accs
 
 data, msgs = parse(sys.argv[1])
-accs = get_accounts(msgs)
+accs = get_accounts_t4(msgs)
+
 # print(f"accounts: {accs}")
 acc_mine, count = accs.most_common()[-1]
 assert count == 1
