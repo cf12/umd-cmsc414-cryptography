@@ -3,7 +3,7 @@
 import sys
 from common import *
 
-def get_accounts_t4(msgs):
+def get_accounts_tfrom(msgs):
     accs = Counter()
 
     for msg in msgs:
@@ -13,15 +13,20 @@ def get_accounts_t4(msgs):
     return accs
 
 data, msgs = parse(sys.argv[1])
-accs = get_accounts_t4(msgs)
-
-# print(f"accounts: {accs}")
-acc_mine, count = accs.most_common()[-1]
-assert count == 1
-# print(f"mine: {acc_mine}")
-
 for msg in msgs:
     print(msg)
+
+all_accs = get_accounts(msgs)
+tfrom_accs = get_accounts_tfrom(msgs)
+# print(f"all: {all_accs}")
+# print(f"tfrom: {tfrom_accs}")
+candidates = set(all_accs.items()) & set(tfrom_accs.items())
+# single_accs = list(acc for acc, count in all_accs.items() if count == 1)
+if len(candidates) > 1:
+    raise Exception(f"more than one candidate: {candidates}")
+acc_mine = candidates.pop()[0]
+# print(f"mine: sacc_mine}")
+
 
 transaction = next(
     msg for msg in msgs 
