@@ -15,7 +15,7 @@ single_accs = list(acc for acc, count in accs.items() if count == 1)
 if len(single_accs) > 1:
     raise Exception(f"more than one candidate: {single_accs}")
 acc_mine = single_accs[0]
-print(f"mine: {acc_mine}")
+# print(f"mine: {acc_mine}")
 
 i, invoice = next(
     (i, msg) for i, msg in enumerate(msgs)
