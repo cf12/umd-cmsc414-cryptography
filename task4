@@ -2,38 +2,40 @@
 
 import sys
 from common import *
-
-def get_accounts_tfrom(msgs):
-    accs = Counter()
-
-    for msg in msgs:
-        if isinstance(msg, Transfer):
-            accs[msg.acc_from] += 1
-
-    return accs
+from copy import deepcopy
+from pprint import pprint
 
 data, msgs = parse(sys.argv[1])
 for msg in msgs:
     print(msg)
 
-all_accs = get_accounts(msgs)
-tfrom_accs = get_accounts_tfrom(msgs)
-# print(f"all: {all_accs}")
-# print(f"tfrom: {tfrom_accs}")
-candidates = set(all_accs.items()) & set(tfrom_accs.items())
-# single_accs = list(acc for acc, count in all_accs.items() if count == 1)
-if len(candidates) > 1:
-    raise Exception(f"more than one candidate: {candidates}")
-acc_mine = candidates.pop()[0]
-# print(f"mine: sacc_mine}")
+accs = get_accounts(msgs)
+# print(f"all: {accs}")
+single_accs = list(acc for acc, count in accs.items() if count == 1)
+if len(single_accs) > 2:
+    raise Exception(f"more than one candidate: {single_accs}")
+acc_mine = single_accs[1]
+# print(f"mine: {acc_mine}")
 
-
-transaction = next(
-    msg for msg in msgs 
-    if isinstance(msg, Transfer) and msg.acc_from == acc_mine
+i, invoice = next(
+    (i, msg) for i, msg in enumerate(msgs)
+    if isinstance(msg, Invoice) and msg.acc_from == acc_mine
 )
 
-transaction.acc_to, transaction.acc_from = transaction.acc_from, transaction.acc_to
+new_transfer = deepcopy(next(
+    msg for msg in msgs
+    if isinstance(msg, Transfer)
+))
+
+new_transfer.acc_from = invoice.acc_from
+new_transfer.acc_to = invoice.acc_to
+# new_transfer.amount = invoice.amount
+
+# print(msgs[i])
+msgs[i] = new_transfer
+# for msg in msgs:
+#     print(msg)
+#     pprint(vars(msg))
 
 with open("task4.out", 'wb+') as fil:
     res = b''.join(msg.encode() for msg in msgs)

@@ -121,8 +121,8 @@ class Transfer(Message):
 class Invoice(Message):
     def __init__(self, type, acc_from, acc_to, amount) -> None:
         super().__init__(type)
-        self.acc_from = acc_from
         self.acc_to = acc_to
+        self.acc_from = acc_from
         self.amount = amount
 
     def __str__(self) -> str:
