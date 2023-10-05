@@ -19,26 +19,16 @@ def parse_data (blocks, mappings):
 
     while i < len(blocks):
         block = blocks[i]
+        msg_block = blocks[i:]
 
         msg = mappings[block]
 
         if msg == "BALANCE":
-            res.append(Balance(block, blocks[i+1]))
+            res.append(Balance(msg_block))
         elif msg == "TRANSFER":
-            res.append(Transfer(
-                block,
-                blocks[i+1],
-                blocks[i+2],
-                blocks[i+3],
-                blocks[i+4],
-            ))
+            res.append(Transfer(msg_block))
         elif msg == "INVOICE":
-            res.append(Invoice(
-                block,
-                blocks[i+1],
-                blocks[i+2],
-                blocks[i+3]
-            ))
+            res.append(Invoice(msg_block))
 
         i += MESSAGE_SIZES[mappings[block]]
         
@@ -93,37 +83,37 @@ def get_accounts(msgs):
     return accs
 
 class Message():
-    def __init__(self, type) -> None:
-        self.type = type
+    def __init__(self, blocks):
+        self.type = blocks[0]
 
     def encode (self):
         return b''.join(vars(self).values())
 
 class Balance(Message):
-    def __init__(self, type, acc) -> None:
-        super().__init__(type)
-        self.acc = acc
+    def __init__(self, blocks):
+        super().__init__(blocks)
+        self.acc = blocks[1]
     
-    def __str__(self) -> str:
+    def __str__(self):
         return "BALANCE"
 
 class Transfer(Message):
-    def __init__(self, type, acc_from, acc_to, amount, time) -> None:
-        super().__init__(type)
-        self.acc_from = acc_from
-        self.acc_to = acc_to
-        self.amount = amount
-        self.time = time
+    def __init__(self, blocks):
+        super().__init__(blocks)
+        self.acc_from = blocks[1]
+        self.acc_to = blocks[2]
+        self.amount = blocks[3]
+        self.time = blocks[4]
 
-    def __str__(self) -> str:
+    def __str__(self):
         return "TRANSFER"
 
 class Invoice(Message):
-    def __init__(self, type, acc_from, acc_to, amount) -> None:
-        super().__init__(type)
-        self.acc_to = acc_to
-        self.acc_from = acc_from
-        self.amount = amount
+    def __init__(self, blocks):
+        super().__init__(blocks)
+        self.acc_to = blocks[1]
+        self.acc_from = blocks[2]
+        self.amount = blocks[3]
 
-    def __str__(self) -> str:
+    def __str__(self):
         return "INVOICE"
