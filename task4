@@ -27,9 +27,9 @@ new_transfer = deepcopy(next(
     if isinstance(msg, Transfer)
 ))
 
-new_transfer.acc_from = invoice.acc_from
-new_transfer.acc_to = invoice.acc_to
-# new_transfer.amount = invoice.amount
+new_transfer.acc_from = invoice.acc_to
+new_transfer.acc_to = invoice.acc_from
+new_transfer.amount = invoice.amount
 
 # print(msgs[i])
 msgs[i] = new_transfer
